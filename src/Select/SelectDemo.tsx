@@ -13,11 +13,27 @@ export const SelectDemo = () => {
       <SelectTrigger className="border border-gray-300 rounded-md p-2">
         <SelectValue />
       </SelectTrigger>
-      <SelectDropdown className="bg-white rounded-md p-2 border border-gray-300 shadow-md">
+
+      <SelectDropdown className="bg-white rounded-md py-2 border border-gray-300 shadow-md">
         <SelectListBox>
-          <SelectItem>Option 1</SelectItem>
-          <SelectItem>Option 2</SelectItem>
-          <SelectItem>Option 3</SelectItem>
+          <SelectItem
+            id="option-1"
+            className="px-2 data-[selected=true]:bg-green-200 data-[focused=true]:bg-gray-200"
+          >
+            Option 1
+          </SelectItem>
+          <SelectItem
+            id="option-2"
+            className="px-2 data-[selected=true]:bg-green-200 data-[focused=true]:bg-gray-200"
+          >
+            Option 2
+          </SelectItem>
+          <SelectItem
+            id="option-3"
+            className="px-2 data-[selected=true]:bg-green-200 data-[focused=true]:bg-gray-200"
+          >
+            Option 3
+          </SelectItem>
         </SelectListBox>
       </SelectDropdown>
     </Select>

@@ -2,9 +2,19 @@ import type { ComponentProps } from "react";
 import { useSelectContext } from "./SelectContext";
 
 export const SelectValue = (props: ComponentProps<"span">) => {
-  const { value, placeholder } = useSelectContext();
+  const { value, placeholder, options } = useSelectContext();
 
-  const displayedValue = Array.isArray(value) ? value.join(", ") : value;
+  const isPlaceholder = value === null;
 
-  return <span {...props}>{displayedValue || placeholder}</span>;
+  const displayedValue = isPlaceholder
+    ? placeholder
+    : Array.isArray(value)
+    ? value.map((v) => options.get(v)?.textValue).join(", ")
+    : options.get(value)?.textValue;
+
+  return (
+    <span data-placeholder={isPlaceholder} {...props}>
+      {displayedValue}
+    </span>
+  );
 };

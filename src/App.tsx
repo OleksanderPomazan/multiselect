@@ -1,4 +1,4 @@
-import { SelectDemo } from "./Select";
+import { SelectDemo } from "./Select/SelectDemo";
 
 export const App = () => {
   return <SelectDemo />;

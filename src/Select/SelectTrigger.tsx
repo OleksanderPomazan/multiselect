@@ -2,6 +2,7 @@ import mergeRefs from "merge-refs";
 import type { ComponentProps, Ref } from "react";
 import { useSelectContext } from "./SelectContext";
 import mergeProps from "merge-props";
+import { type PointerEvent } from "react";
 
 export const SelectTrigger = (props: ComponentProps<"button">) => {
   const { open, setOpen, setTriggerEl } = useSelectContext();
@@ -15,6 +16,9 @@ export const SelectTrigger = (props: ComponentProps<"button">) => {
             if (!open) {
               setOpen(true);
             }
+          },
+          onPointerDown: (e: PointerEvent<HTMLButtonElement>) => {
+            e.preventDefault();
           },
           type: "button",
         } as const,

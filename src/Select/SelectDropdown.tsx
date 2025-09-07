@@ -1,30 +1,27 @@
 import mergeRefs from "merge-refs";
-import { useEffect, useRef, type ComponentProps, type Ref } from "react";
+import { useEffect, type ComponentProps, type Ref } from "react";
 import { usePopper } from "react-popper";
 import { useSelectContext } from "./SelectContext";
 import mergeProps from "merge-props";
 import { useEventCallback } from "usehooks-ts";
+import { useFocusWithin } from "ahooks";
 
 function useOnClickOutside(
   element: HTMLElement | null,
   callback: (e: PointerEvent) => void
 ) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const handler = useEventCallback(callback);
+  const handler = useEventCallback((event: PointerEvent) => {
+    if (!element?.contains(event.target as Node)) {
+      callback(event);
+    }
+  });
 
   useEffect(() => {
-    function handleClickOutside(event: PointerEvent) {
-      if (!element?.contains(event.target as Node)) {
-        handler(event);
-      }
-    }
-
-    document.addEventListener("pointerdown", handleClickOutside);
+    document.addEventListener("pointerdown", handler);
     return () => {
-      document.removeEventListener("pointerdown", handleClickOutside);
+      document.removeEventListener("pointerdown", handler);
     };
-  }, [ref]);
+  }, [handler]);
 }
 
 export const SelectDropdown = ({
@@ -41,6 +38,29 @@ export const SelectDropdown = ({
 
   useOnClickOutside(dropdownEl, () => setOpen(false));
 
+  const isDropdownFocused = useFocusWithin(dropdownEl);
+
+  const keyboardHandler = useEventCallback((event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      setOpen(false);
+    }
+  });
+
+  useEffect(() => {
+    if (isDropdownFocused) {
+      document.addEventListener("keydown", keyboardHandler);
+      return () => {
+        document.removeEventListener("keydown", keyboardHandler);
+      };
+    }
+  });
+
+  useEffect(() => {
+    if (open) {
+      dropdownEl?.focus();
+    }
+  }, [isDropdownFocused, open, setOpen, dropdownEl]);
+
   if (!open) return null;
 
   return (
@@ -48,7 +68,8 @@ export const SelectDropdown = ({
       {...mergeProps(
         props,
         { style: styles.popper },
-        popperAttributes as ComponentProps<"div">
+        popperAttributes as ComponentProps<"div">,
+        { tabIndex: 0 }
       )}
       ref={mergeRefs(setDropdownEl, props.ref) as Ref<HTMLDivElement>}
     >
