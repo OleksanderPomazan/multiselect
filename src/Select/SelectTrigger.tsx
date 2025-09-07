@@ -12,7 +12,9 @@ export const SelectTrigger = (props: ComponentProps<"button">) => {
       {...mergeProps(
         {
           onClick: () => {
-            setOpen(!open);
+            if (!open) {
+              setOpen(true);
+            }
           },
           type: "button",
         } as const,
