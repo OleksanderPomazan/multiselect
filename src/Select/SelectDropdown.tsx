@@ -1,5 +1,5 @@
 import mergeRefs from "merge-refs";
-import { useEffect, type ComponentProps, type Ref } from "react";
+import { useEffect, useRef, type ComponentProps, type Ref } from "react";
 import { usePopper } from "react-popper";
 import { useSelectContext } from "./SelectContext";
 import mergeProps from "merge-props";
@@ -30,7 +30,7 @@ export const SelectDropdown = ({
   className,
   ...props
 }: ComponentProps<"div">) => {
-  const { dropdownEl, triggerEl, open, setOpen, setDropdownEl } =
+  const { dropdownEl, triggerEl, setOpen, open, setDropdownEl } =
     useSelectContext();
 
   const {
@@ -64,7 +64,9 @@ export const SelectDropdown = ({
   return (
     <div
       {...mergeProps(
-        { className: cn("outline-none z-[99999]", className) },
+        {
+          className: cn("outline-none z-[99999]", className),
+        },
         props,
         { style: styles.popper },
         popperAttributes as ComponentProps<"div">,

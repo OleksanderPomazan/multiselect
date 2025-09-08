@@ -38,7 +38,7 @@ export const useListBoxContext = () => {
 type SelectListBoxProps = ComponentProps<"div">;
 
 export const SelectListBox = ({ children, ...props }: SelectListBoxProps) => {
-  const { open, onSelect, multiple, value, dropdownEl, options, setOpen } =
+  const { onSelect, multiple, value, dropdownEl, options, setOpen } =
     useSelectContext();
 
   const [focusedKey, setFocusedKey] = useState<string | null>(null);
@@ -124,8 +124,6 @@ export const SelectListBox = ({ children, ...props }: SelectListBoxProps) => {
 
   const listboxId = useIdFor("listbox");
   const labelId = useIdFor("label");
-
-  if (!open) return null;
 
   return (
     <ListBoxContext.Provider

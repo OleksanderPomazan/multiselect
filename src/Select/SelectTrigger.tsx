@@ -4,9 +4,11 @@ import { useSelectContext } from "./SelectContext";
 import mergeProps from "merge-props";
 import { type PointerEvent } from "react";
 import { useIdFor } from "./ids";
+import { type KeyboardEvent } from "react";
 
 export const SelectTrigger = (props: ComponentProps<"button">) => {
-  const { open, setOpen, setTriggerEl } = useSelectContext();
+  const { open, setOpen, setTriggerEl, value, onSelect, multiple } =
+    useSelectContext();
   const triggerId = useIdFor("trigger");
   const labelId = useIdFor("label");
 
@@ -26,6 +28,12 @@ export const SelectTrigger = (props: ComponentProps<"button">) => {
           },
           onPointerDown: (e: PointerEvent<HTMLButtonElement>) => {
             e.preventDefault();
+          },
+          onKeyDown: (e: KeyboardEvent<HTMLButtonElement>) => {
+            if (multiple && e.key === "Backspace") {
+              e.preventDefault();
+              onSelect((value ?? []).slice(0, -1));
+            }
           },
           type: "button",
         } as const,
