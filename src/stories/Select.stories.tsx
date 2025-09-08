@@ -1,6 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { fn } from "storybook/test";
 import { expect, within, userEvent } from "storybook/test";
 import {
   SelectTrigger,
