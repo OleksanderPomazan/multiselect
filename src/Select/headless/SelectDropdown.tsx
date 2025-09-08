@@ -5,7 +5,7 @@ import { useSelectContext } from "./SelectContext";
 import mergeProps from "merge-props";
 import { useEventCallback } from "usehooks-ts";
 import { useFocusWithin } from "ahooks";
-import { cn } from "../cn";
+import { cn } from "../../cn";
 
 function useOnClickOutside(
   element: HTMLElement | null,

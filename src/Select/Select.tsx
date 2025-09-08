@@ -1,115 +1,88 @@
-import { useEffect, useId, useState, type ComponentProps } from "react";
+import { SelectDropdown as HeadlessSelectDropdown } from "./headless/SelectDropdown";
 import {
-  type MultipleSelectContext,
-  type MultipleSelection,
-  type SingleSelectContext,
-  type SingleSelection,
-  SelectContext,
-} from "./SelectContext";
-import { extractListBoxOptions, findListBox } from "./SelectListBox";
-import { SelectSearchContext } from "./SelectSearch";
-import { useSize } from "ahooks";
+  SearchMatchText,
+  SelectItem,
+  SelectListBox,
+} from "./headless/SelectListBox";
+import { SelectTrigger as HeadlessSelectTrigger } from "./headless/SelectTrigger";
+import { SelectValue as HeadlessSelectValue } from "./headless/SelectValue";
+import { Select } from "./headless/Select";
+import { SelectSearch as HeadlessSelectSearch } from "./headless/SelectSearch";
+import { cn } from "../cn";
+import { ChipItem } from "./ChipItem";
+import { Search } from "lucide-react";
 
-const extractOptions = (children: React.ReactNode) => {
-  const listBox = findListBox(children);
-  return new Map(
-    extractListBoxOptions(listBox?.props.children).map((option) => {
-      const textValue =
-        typeof option.props.children === "string"
-          ? option.props.children
-          : option.props.textValue ?? null;
+export { SelectListBox, SelectItem, SearchMatchText, Select };
 
-      if (textValue === null && option.props.textValue === "undefined") {
-        console.warn(
-          "SelectItem missing textValue prop. Either provide a textValue prop or a string child."
-        );
-      }
-      return [
-        option.props.id,
-        { id: option.props.id, textValue: textValue ?? "" },
-      ];
-    })
-  );
-};
-
-type SelectProps<Multiple extends boolean = false> = {
-  children: React.ReactNode;
-  multiple?: Multiple;
-  placeholder?: string;
-} & Omit<ComponentProps<"div">, "onSelect" | "value"> &
-  (Multiple extends true ? MultipleSelection : SingleSelection);
-
-export const Select = <Multiple extends boolean = false>(
-  props: SelectProps<Multiple>
-) => {
-  const {
-    children,
-    onSelect,
-    multiple = false,
-    value,
-    placeholder = "",
-    ...attributes
-  } = props;
-
-  const baseId = useId();
-
-  const [search, setSearch] = useState("");
-  const [open, setOpen] = useState(false);
-  const [triggerEl, setTriggerEl] = useState<HTMLElement | null>(null);
-  const [dropdownEl, setDropdownEl] = useState<HTMLElement | null>(null);
-  const [searchRef, setSearchRef] = useState<HTMLInputElement | null>(null);
-
-  const options = extractOptions(children);
-
-  const selectionProps = { onSelect, value } as Multiple extends true
-    ? MultipleSelection
-    : SingleSelection;
-
-  useEffect(() => {
-    if (open) {
-      // focus search if it exists otherwise fallback to dropdown
-      if (searchRef) {
-        return searchRef.focus();
-      }
-      if (dropdownEl) {
-        return dropdownEl.focus();
-      }
-    }
-  }, [open, setOpen, dropdownEl, searchRef]);
-
-  const size = useSize(triggerEl);
-
+export const SelectValue = ({
+  onRemove,
+}: {
+  onRemove: (value: string) => void;
+}) => {
   return (
-    <SelectSearchContext.Provider value={{ search, setSearch, setSearchRef }}>
-      <SelectContext.Provider
-        value={
-          {
-            open,
-            setOpen,
-            multiple,
-            triggerEl,
-            setTriggerEl,
-            dropdownEl,
-            setDropdownEl,
-            placeholder,
-            options,
-            baseId,
-            ...selectionProps,
-          } as Multiple extends true
-            ? MultipleSelectContext
-            : SingleSelectContext
+    <HeadlessSelectValue>
+      {({ value, defaultChildren, textValue }) => {
+        if (
+          value === null ||
+          typeof value === "string" ||
+          (Array.isArray(value) && value.length === 0)
+        ) {
+          return defaultChildren;
         }
-      >
-        <div
-          {...attributes}
-          style={{
-            ...attributes.style,
-            "--trigger-width": size ? `${size.width}px` : "auto",
-          }}
-        >
-          {children}
-        </div>
-      </SelectContext.Provider>
-    </SelectSearchContext.Provider>
+
+        if (textValue === null || !Array.isArray(textValue)) {
+          return defaultChildren;
+        }
+
+        return (
+          <ul className="flex flex-wrap items-center gap-2">
+            {value.map((val, i) => (
+              <li key={val}>
+                <ChipItem onRemove={() => onRemove(val)}>
+                  {textValue[i]}
+                </ChipItem>
+              </li>
+            ))}
+          </ul>
+        );
+      }}
+    </HeadlessSelectValue>
   );
 };
+
+export const SelectTrigger = ({ children }: { children: React.ReactNode }) => (
+  <HeadlessSelectTrigger className="border border-gray-300 rounded-md p-2 min-w-2xs text-start">
+    {children}
+  </HeadlessSelectTrigger>
+);
+
+export const SelectSearch = () => {
+  return (
+    <HeadlessSelectSearch>
+      {({ search, setSearch, inputProps }) => (
+        <div className="px-2 mx-2 flex items-center text-gray-800 justify-between  border-b-2 gap-2 border-b-green-200 focus-within:border-b-green-400">
+          <Search className="size-4" />
+          <input
+            {...inputProps}
+            className={cn(
+              inputProps.className,
+              "px-2 w-full  outline-none mb-2  "
+            )}
+          />
+
+          {search && (
+            <button type="button" onClick={() => setSearch("")}>
+              Clear
+            </button>
+          )}
+        </div>
+      )}
+    </HeadlessSelectSearch>
+  );
+};
+
+export const SelectDropdown = ({ children }: { children: React.ReactNode }) => (
+  <HeadlessSelectDropdown className="w-[var(--trigger-width)] bg-white rounded-md py-2 border border-gray-300 shadow-md">
+    {children}
+  </HeadlessSelectDropdown>
+);

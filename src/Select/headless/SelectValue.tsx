@@ -4,6 +4,7 @@ import { useSelectContext } from "./SelectContext";
 type SelectValueRenderProps = {
   value: string[] | string | null;
   defaultChildren: React.ReactNode;
+  textValue: string[] | string | null;
 };
 
 type SelectValueProps = Omit<ComponentProps<"span">, "children"> & {
@@ -28,8 +29,14 @@ export const SelectValue = ({ children, ...props }: SelectValueProps) => {
     </span>
   );
 
+  const textValue = isPlaceholder
+    ? null
+    : Array.isArray(value)
+    ? value.map((v) => options.get(v)?.textValue ?? "")
+    : options.get(value)?.textValue ?? null;
+
   if (typeof children === "function") {
-    return children({ value, defaultChildren: defaultChildren });
+    return children({ value, defaultChildren: defaultChildren, textValue });
   }
 
   return defaultChildren;

@@ -10,7 +10,7 @@ import {
 } from "react";
 import { useSelectContext } from "./SelectContext";
 import mergeProps from "merge-props";
-import { cn } from "../cn";
+import { cn } from "../../cn";
 import { useFocusWithin } from "ahooks";
 import { useEventCallback } from "usehooks-ts";
 import { useSelectSearchContext } from "./SelectSearch";
