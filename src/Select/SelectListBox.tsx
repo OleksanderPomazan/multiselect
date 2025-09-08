@@ -2,6 +2,7 @@ import {
   type ComponentProps,
   Children,
   createContext,
+  Fragment,
   isValidElement,
   useContext,
   useEffect,
@@ -251,7 +252,11 @@ export const SearchMatchText = ({
         // Check if this part matches the search term (case-insensitive)
         const isMatch = part.toLowerCase() === search.toLowerCase();
 
-        return isMatch ? renderMatch(part) : <span key={index}>{part}</span>;
+        return isMatch ? (
+          <Fragment key={index}>{renderMatch(part)}</Fragment>
+        ) : (
+          <span key={index}>{part}</span>
+        );
       })}
     </>
   );

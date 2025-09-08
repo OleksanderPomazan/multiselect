@@ -40,7 +40,9 @@ export const SelectDropdown = ({
 
   useOnClickOutside(dropdownEl, () => setOpen(false));
 
-  const isDropdownFocused = useFocusWithin(dropdownEl);
+  const isDropdownFocused = useFocusWithin(dropdownEl, {
+    onBlur: () => setOpen(false),
+  });
 
   const keyboardHandler = useEventCallback((event: KeyboardEvent) => {
     if (event.key === "Escape") {
@@ -62,7 +64,7 @@ export const SelectDropdown = ({
   return (
     <div
       {...mergeProps(
-        { className: cn("outline-none", className) },
+        { className: cn("outline-none z-[99999]", className) },
         props,
         { style: styles.popper },
         popperAttributes as ComponentProps<"div">,
