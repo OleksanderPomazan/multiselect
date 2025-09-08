@@ -11,6 +11,7 @@ export const SelectSearchContext = createContext<{
   setSearch: (search: string) => void;
   setSearchRef: (ref: HTMLInputElement | null) => void;
 } | null>(null);
+import mergeProps from "merge-props";
 
 export const useSelectSearchContext = () => {
   const context = useContext(SelectSearchContext);
@@ -22,20 +23,42 @@ export const useSelectSearchContext = () => {
   return context;
 };
 
-export const SelectSearch = (props: ComponentProps<"input">) => {
+type SelectSearchRenderProps = {
+  search: string;
+  setSearch: (search: string) => void;
+  inputProps: ComponentProps<"input">;
+};
+
+type SelectSearchProps = Omit<ComponentProps<"input">, "children"> & {
+  children?:
+    | React.ReactNode
+    | ((props: SelectSearchRenderProps) => React.ReactNode);
+};
+
+export const SelectSearch = ({ children, ...props }: SelectSearchProps) => {
   const { search, setSearch, setSearchRef } = useSelectSearchContext();
 
   useEffect(() => {
     return () => setSearch("");
   }, [setSearch]);
 
-  return (
-    <input
-      ref={mergeRefs(props.ref, setSearchRef)}
-      type="text"
-      value={search}
-      onChange={(e) => setSearch(e.target.value)}
-      {...props}
-    />
+  const inputProps = mergeProps(
+    {
+      ref: mergeRefs(props.ref, setSearchRef),
+      type: "text",
+      value: search,
+      onChange: (e) => setSearch(e.target.value),
+    },
+    props
   );
+
+  const defaultChildren = <input {...inputProps} />;
+
+  return typeof children === "function"
+    ? children({
+        search,
+        setSearch,
+        inputProps,
+      })
+    : defaultChildren;
 };
