@@ -107,6 +107,10 @@ export const WithSearch: Story = {
   },
 };
 
+const Portal = ({ children }: { children: React.ReactNode }) => {
+  return createPortal(children, document.body);
+};
+
 export const WithPortal: Story = {
   name: "With react portal",
   render: () => {
@@ -127,7 +131,7 @@ export const WithPortal: Story = {
           <SelectValue />
         </SelectTrigger>
 
-        {createPortal(
+        <Portal>
           <SelectDropdown>
             <SelectSearch />
 
@@ -150,9 +154,8 @@ export const WithPortal: Story = {
                 </SelectItem>
               ))}
             </SelectListBox>
-          </SelectDropdown>,
-          document.body
-        )}
+          </SelectDropdown>
+        </Portal>
       </Select>
     );
   },

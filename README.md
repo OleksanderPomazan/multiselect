@@ -1,69 +1,201 @@
-# React + TypeScript + Vite
+# Multiselect Component
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Getting Started
 
-Currently, two official plugins are available:
+### Prerequisites
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Node.js 18+
+- PNPM (recommended) or npm/yarn
 
-## Expanding the ESLint configuration
+### Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. Clone the repository:
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone <repository-url>
+cd multiselect
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Install dependencies:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
 ```
+
+## Development
+
+### Start Development Server
+
+Run the development server with hot reload:
+
+```bash
+pnpm dev
+```
+
+The app will be available at [http://localhost:5173](http://localhost:5173)
+
+## Storybook
+
+Storybook provides an interactive environment to develop and test components in isolation.
+
+### Start Storybook Development Server
+
+```bash
+pnpm storybook
+```
+
+Storybook will be available at [http://localhost:6006](http://localhost:6006)
+
+### Build Storybook
+
+Build a static version of Storybook:
+
+```bash
+pnpm build-storybook
+```
+
+### Serve Built Storybook
+
+Serve the built Storybook locally:
+
+```bash
+pnpm serve-storybook
+```
+
+## Testing
+
+This project uses Vitest integrated with Storybook for testing.
+
+### Run Tests
+
+```bash
+npx vitest
+```
+
+### Run Tests in Watch Mode
+
+```bash
+npx vitest --watch
+```
+
+### Run Tests with Coverage
+
+```bash
+npx vitest --coverage
+```
+
+Tests are configured to run against Storybook stories using the browser testing environment with Playwright.
+
+## Building
+
+### Build for Production
+
+```bash
+pnpm build
+```
+
+This will:
+
+1. Run TypeScript compilation (`tsc -b`)
+2. Build the application with Vite
+
+### Preview Production Build
+
+```bash
+pnpm preview
+```
+
+The production build will be available at [http://localhost:4173](http://localhost:4173)
+
+## Usage Example
+
+```tsx
+import { useState } from "react";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectDropdown,
+  SelectSearch,
+  SelectListBox,
+  SelectItem,
+  SearchMatchText,
+} from "./Select/Select";
+
+const options = [
+  { id: "option-1", text: "Option 1" },
+  { id: "option-2", text: "Option 2" },
+  { id: "option-3", text: "Option 3" },
+];
+
+const MultiselectDemo = () => {
+  const [value, setValue] = useState<string[] | null>(null);
+
+  return (
+    <Select
+      onSelect={setValue}
+      multiple
+      value={value}
+      placeholder="Select an option"
+    >
+      <SelectTrigger>
+        <SelectValue
+          onRemove={(val) =>
+            Array.isArray(value) && setValue(value.filter((v) => v !== val))
+          }
+        />
+      </SelectTrigger>
+
+      <SelectDropdown>
+        <SelectSearch />
+        <SelectListBox>
+          {options.map((option) => (
+            <SelectItem key={option.id} id={option.id} textValue={option.text}>
+              {({ textValue }) => (
+                <SearchMatchText
+                  text={textValue}
+                  renderMatch={(match) => (
+                    <span className="bg-green-500">{match}</span>
+                  )}
+                />
+              )}
+            </SelectItem>
+          ))}
+        </SelectListBox>
+      </SelectDropdown>
+    </Select>
+  );
+};
+```
+
+## Project Structure
+
+```
+src/
+├── Select/
+│   ├── headless/          # Headless component logic
+│   │   ├── Select.tsx     # Main select component
+│   │   ├── SelectContext.tsx
+│   │   ├── SelectDropdown.tsx
+│   │   ├── SelectListBox.tsx
+│   │   ├── SelectSearch.tsx
+│   │   ├── SelectTrigger.tsx
+│   │   └── SelectValue.tsx
+│   ├── ChipItem.tsx       # Styled chip component
+│   └── Select.tsx         # Styled select components
+├── stories/               # Storybook stories
+└── App.tsx               # Demo application
+```
+
+## Scripts Reference
+
+| Command                | Description                |
+| ---------------------- | -------------------------- |
+| `pnpm dev`             | Start development server   |
+| `pnpm build`           | Build for production       |
+| `pnpm preview`         | Preview production build   |
+| `pnpm lint`            | Run ESLint                 |
+| `pnpm storybook`       | Start Storybook dev server |
+| `pnpm build-storybook` | Build Storybook            |
+| `pnpm serve-storybook` | Serve built Storybook      |
+| `pnpm test`            | Run tests                  |
