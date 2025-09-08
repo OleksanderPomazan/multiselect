@@ -1,0 +1,29 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "declarationMap": true,
+    "noEmit": false,
+    "emitDeclarationOnly": false,
+    "skipLibCheck": true,
+    "composite": false,
+    "allowImportingTsExtensions": false,
+    "verbatimModuleSyntax": false,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/index.ts", "src/Select/**/*", "src/cn.ts"],
+  "exclude": [
+    "src/main.tsx",
+    "src/App.tsx",
+    "src/stories/**/*",
+    "src/vite-env.d.ts",
+    "src/style.css",
+    "**/*.stories.*",
+    "**/*.test.*",
+    "**/*.spec.*"
+  ]
+}

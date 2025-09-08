@@ -1,0 +1,40 @@
+# Source files
+src/
+!dist/
+
+# Development files
+.storybook/
+storybook-static/
+node_modules/
+.pnpm-lock.yaml
+pnpm-lock.yaml
+
+# Configuration files
+vite.config.ts
+tsconfig*.json
+eslint.config.js
+.gitignore
+
+# Development assets
+index.html
+public/
+vercel.json
+
+# Test files
+**/*.test.*
+**/*.spec.*
+**/*.stories.*
+
+# Documentation for development
+# README.md - keep this for npm
+
+# Logs and caches
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# Demo app
+src/main.tsx
+src/App.tsx
+src/style.css

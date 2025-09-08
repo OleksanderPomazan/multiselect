@@ -47,7 +47,8 @@ export const SelectSearch = ({ children, ...props }: SelectSearchProps) => {
       ref: mergeRefs(props.ref, setSearchRef),
       type: "text",
       value: search,
-      onChange: (e) => setSearch(e.target.value),
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+        setSearch(e.target.value),
     },
     props
   );
