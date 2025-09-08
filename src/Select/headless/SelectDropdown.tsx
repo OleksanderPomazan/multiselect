@@ -1,10 +1,10 @@
 import mergeRefs from "merge-refs";
-import { useEffect, useRef, type ComponentProps, type Ref } from "react";
+import { useEffect, type ComponentProps, type Ref } from "react";
 import { usePopper } from "react-popper";
 import { useSelectContext } from "./SelectContext";
 import mergeProps from "merge-props";
 import { useEventCallback } from "usehooks-ts";
-import { useFocusWithin } from "ahooks";
+import { useFocusWithin, useSize } from "ahooks";
 import { cn } from "../../cn";
 
 function useOnClickOutside(
@@ -59,12 +59,15 @@ export const SelectDropdown = ({
     }
   });
 
+  const size = useSize(triggerEl);
+
   if (!open) return null;
 
   return (
     <div
       {...mergeProps(
         {
+          style: { "--trigger-width": size ? `${size.width}px` : "auto" },
           className: cn("outline-none z-[99999]", className),
         },
         props,

@@ -10,14 +10,14 @@ import { Select } from "./headless/Select";
 import { SelectSearch as HeadlessSelectSearch } from "./headless/SelectSearch";
 import { cn } from "../cn";
 import { ChipItem } from "./ChipItem";
-import { Search } from "lucide-react";
+import { Search, XCircle } from "lucide-react";
 
 export { SelectListBox, SelectItem, SearchMatchText, Select };
 
 export const SelectValue = ({
   onRemove,
 }: {
-  onRemove: (value: string) => void;
+  onRemove?: (value: string) => void;
 }) => {
   return (
     <HeadlessSelectValue>
@@ -38,7 +38,7 @@ export const SelectValue = ({
           <ul className="flex flex-wrap items-center gap-2">
             {value.map((val, i) => (
               <li key={val}>
-                <ChipItem onRemove={() => onRemove(val)}>
+                <ChipItem onRemove={() => onRemove?.(val)}>
                   {textValue[i]}
                 </ChipItem>
               </li>
@@ -61,7 +61,7 @@ export const SelectSearch = () => {
     <HeadlessSelectSearch>
       {({ search, setSearch, inputProps }) => (
         <div className="px-2 mx-2 flex items-center text-gray-800 justify-between  border-b-2 gap-2 border-b-green-200 focus-within:border-b-green-400">
-          <Search className="size-4" />
+          <Search className="size-4 shrink-0" />
           <input
             {...inputProps}
             className={cn(
@@ -71,8 +71,13 @@ export const SelectSearch = () => {
           />
 
           {search && (
-            <button type="button" onClick={() => setSearch("")}>
-              Clear
+            <button
+              type="button"
+              className="shrink-0 text-gray-400"
+              onClick={() => setSearch("")}
+            >
+              <span className="sr-only">Clear</span>
+              <XCircle className="size-4" />
             </button>
           )}
         </div>
