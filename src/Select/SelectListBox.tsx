@@ -12,6 +12,7 @@ import mergeProps from "merge-props";
 import { cn } from "../cn";
 import { useFocusWithin } from "ahooks";
 import { useEventCallback } from "usehooks-ts";
+import { useSelectSearchContext } from "./SelectSearch";
 
 const modN = (n: number, d: number) => {
   return ((n % d) + d) % d;
@@ -35,10 +36,12 @@ export const useListBoxContext = () => {
 type SelectListBoxProps = ComponentProps<"div">;
 
 export const SelectListBox = ({ children, ...props }: SelectListBoxProps) => {
-  const { open, onSelect, multiple, value, dropdownEl, options } =
+  const { open, onSelect, multiple, value, dropdownEl, options, setOpen } =
     useSelectContext();
 
   const [focusedKey, setFocusedKey] = useState<string | null>(null);
+
+  const { search } = useSelectSearchContext();
 
   if (!open) return null;
 
@@ -63,6 +66,9 @@ export const SelectListBox = ({ children, ...props }: SelectListBoxProps) => {
       } else {
         onSelect(id);
       }
+
+      // Close dropdown after select for single selection
+      setOpen(false);
     }
   };
 
@@ -103,14 +109,28 @@ export const SelectListBox = ({ children, ...props }: SelectListBoxProps) => {
     }
   }, [isDropdownFocused, keyboardNavigationHandler]);
 
+  const filteredOptions = Array.from(options.values())
+    .filter((option) =>
+      option.textValue.toLowerCase().includes(search.toLowerCase())
+    )
+    .map((option) => option.id);
+
+  const filteredChildren = Children.toArray(children).filter((child) => {
+    if (isValidElement<SelectItemProps>(child) && child.type === SelectItem) {
+      return filteredOptions.includes(child.props.id);
+    }
+    return true;
+  });
+
   return (
     <ListBoxContext.Provider
       value={{ focusedKey, setFocusedKey, toggleItem, isSelected }}
     >
-      <div {...props}>{children}</div>
+      <div {...props}>{filteredChildren}</div>
     </ListBoxContext.Provider>
   );
 };
+
 /**
  * Recursively searches through a React children tree to find a SelectListBox component.
  * Performs a breadth-first traversal of all nested children until it finds the first
@@ -150,20 +170,33 @@ export const extractListBoxOptions = (children: React.ReactNode) => {
   ) as React.ReactElement<SelectItemProps>[];
 };
 
-export type SelectItemProps = ComponentProps<"div"> & {
+export type SelectItemProps = Omit<ComponentProps<"div">, "children"> & {
   id: string;
   textValue?: string;
+  children:
+    | React.ReactNode
+    | ((props: SelectItemRenderProps) => React.ReactNode);
+};
+
+type SelectItemRenderProps = {
+  textValue: string;
+  isFocused: boolean;
+  isSelected: boolean;
 };
 
 export const SelectItem = ({
   children,
   className,
+  textValue: textValueProp,
   ...props
 }: SelectItemProps) => {
-  const { focusedKey, setFocusedKey, toggleItem, isSelected, options } =
+  const { focusedKey, setFocusedKey, toggleItem, isSelected } =
     useListBoxContext();
 
   const isFocused = focusedKey === props.id;
+
+  const textValue =
+    typeof children === "string" ? children : textValueProp ?? "";
 
   return (
     <div
@@ -178,7 +211,48 @@ export const SelectItem = ({
         props
       )}
     >
-      {children}
+      {typeof children === "function"
+        ? children({
+            textValue,
+            isFocused,
+            isSelected: isSelected(props.id),
+          })
+        : children}
     </div>
+  );
+};
+
+export const SearchMatchText = ({
+  text,
+  renderMatch = (match: string) => <span>{match}</span>,
+}: {
+  text: string;
+  renderMatch: (match: string) => React.ReactNode;
+}) => {
+  const { search } = useSelectSearchContext();
+
+  // If no search term, return the text as-is
+  if (!search.trim()) {
+    return <>{text}</>;
+  }
+
+  // Create a case-insensitive regex to find all matches
+  const regex = new RegExp(
+    `(${search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+    "gi"
+  );
+
+  // Split the text by the search term, keeping the separators (matches)
+  const parts = text.split(regex);
+
+  return (
+    <>
+      {parts.map((part, index) => {
+        // Check if this part matches the search term (case-insensitive)
+        const isMatch = part.toLowerCase() === search.toLowerCase();
+
+        return isMatch ? renderMatch(part) : <span key={index}>{part}</span>;
+      })}
+    </>
   );
 };

@@ -1,7 +1,12 @@
-import { SelectDemo } from "./Select/SelectDemo";
+import { SelectDemo, SelectDemoMultiple } from "./Select/SelectDemo";
 
 export const App = () => {
-  return <SelectDemo />;
+  return (
+    <div>
+      <SelectDemo />
+      <SelectDemoMultiple />
+    </div>
+  );
 };
 
 export default App;

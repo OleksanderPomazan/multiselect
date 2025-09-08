@@ -5,6 +5,7 @@ import { useSelectContext } from "./SelectContext";
 import mergeProps from "merge-props";
 import { useEventCallback } from "usehooks-ts";
 import { useFocusWithin } from "ahooks";
+import { cn } from "../cn";
 
 function useOnClickOutside(
   element: HTMLElement | null,
@@ -26,6 +27,7 @@ function useOnClickOutside(
 
 export const SelectDropdown = ({
   children,
+  className,
   ...props
 }: ComponentProps<"div">) => {
   const { dropdownEl, triggerEl, open, setOpen, setDropdownEl } =
@@ -55,17 +57,12 @@ export const SelectDropdown = ({
     }
   });
 
-  useEffect(() => {
-    if (open) {
-      dropdownEl?.focus();
-    }
-  }, [isDropdownFocused, open, setOpen, dropdownEl]);
-
   if (!open) return null;
 
   return (
     <div
       {...mergeProps(
+        { className: cn("outline-none", className) },
         props,
         { style: styles.popper },
         popperAttributes as ComponentProps<"div">,

@@ -1,4 +1,4 @@
-import { Children, isValidElement, useState, type ComponentProps } from "react";
+import { useEffect, useState, type ComponentProps } from "react";
 import {
   type MultipleSelectContext,
   type MultipleSelection,
@@ -6,12 +6,9 @@ import {
   type SingleSelection,
   SelectContext,
 } from "./SelectContext";
-import {
-  extractListBoxOptions,
-  findListBox,
-  SelectItem,
-  type SelectItemProps,
-} from "./SelectListBox";
+import { extractListBoxOptions, findListBox } from "./SelectListBox";
+import { SelectSearchContext } from "./SelectSearch";
+import { useSize } from "ahooks";
 
 const extractOptions = (children: React.ReactNode) => {
   const listBox = findListBox(children);
@@ -54,9 +51,11 @@ export const Select = <Multiple extends boolean = false>(
     ...attributes
   } = props;
 
+  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [triggerEl, setTriggerEl] = useState<HTMLElement | null>(null);
   const [dropdownEl, setDropdownEl] = useState<HTMLElement | null>(null);
+  const [searchRef, setSearchRef] = useState<HTMLInputElement | null>(null);
 
   const options = extractOptions(children);
 
@@ -64,24 +63,50 @@ export const Select = <Multiple extends boolean = false>(
     ? MultipleSelection
     : SingleSelection;
 
-  return (
-    <SelectContext.Provider
-      value={
-        {
-          open,
-          setOpen,
-          multiple,
-          triggerEl,
-          setTriggerEl,
-          dropdownEl,
-          setDropdownEl,
-          placeholder,
-          options,
-          ...selectionProps,
-        } as Multiple extends true ? MultipleSelectContext : SingleSelectContext
+  useEffect(() => {
+    if (open) {
+      // focus search if it exists otherwise fallback to dropdown
+      if (searchRef) {
+        return searchRef.focus();
       }
-    >
-      <div {...attributes}>{children}</div>
-    </SelectContext.Provider>
+      if (dropdownEl) {
+        return dropdownEl.focus();
+      }
+    }
+  }, [open, setOpen, dropdownEl, searchRef]);
+
+  const size = useSize(triggerEl);
+
+  return (
+    <SelectSearchContext.Provider value={{ search, setSearch, setSearchRef }}>
+      <SelectContext.Provider
+        value={
+          {
+            open,
+            setOpen,
+            multiple,
+            triggerEl,
+            setTriggerEl,
+            dropdownEl,
+            setDropdownEl,
+            placeholder,
+            options,
+            ...selectionProps,
+          } as Multiple extends true
+            ? MultipleSelectContext
+            : SingleSelectContext
+        }
+      >
+        <div
+          {...attributes}
+          style={{
+            ...attributes.style,
+            "--trigger-width": size ? `${size.width}px` : "auto",
+          }}
+        >
+          {children}
+        </div>
+      </SelectContext.Provider>
+    </SelectSearchContext.Provider>
   );
 };
