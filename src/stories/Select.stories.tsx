@@ -181,7 +181,11 @@ export const WithMultipleSelection: Story = {
         placeholder="Select an option"
       >
         <SelectTrigger>
-          <SelectValue />
+          <SelectValue
+            onRemove={(val) =>
+              Array.isArray(value) && setValue(value.filter((v) => v !== val))
+            }
+          />
         </SelectTrigger>
 
         <SelectDropdown>
