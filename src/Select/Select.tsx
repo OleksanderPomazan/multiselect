@@ -85,6 +85,9 @@ export const SelectSearch = () => {
             <button
               type="button"
               className="shrink-0 text-gray-400"
+              onPointerDown={(e) => {
+                e.preventDefault();
+              }}
               onClick={(e) => {
                 e.stopPropagation();
                 setSearch("");
