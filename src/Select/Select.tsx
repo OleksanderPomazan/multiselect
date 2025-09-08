@@ -11,6 +11,7 @@ import { SelectSearch as HeadlessSelectSearch } from "./headless/SelectSearch";
 import { cn } from "../cn";
 import { ChipItem } from "./ChipItem";
 import { Search, XCircle } from "lucide-react";
+import type { ComponentProps } from "react";
 
 export { SelectListBox, SelectItem, SearchMatchText, Select };
 
@@ -50,8 +51,18 @@ export const SelectValue = ({
   );
 };
 
-export const SelectTrigger = ({ children }: { children: React.ReactNode }) => (
-  <HeadlessSelectTrigger className="border border-gray-300 rounded-md p-2 min-w-2xs text-start">
+export const SelectTrigger = ({
+  children,
+  className,
+  ...props
+}: ComponentProps<typeof HeadlessSelectTrigger>) => (
+  <HeadlessSelectTrigger
+    {...props}
+    className={cn(
+      "border border-gray-300 rounded-md p-2 min-w-2xs text-start",
+      className
+    )}
+  >
     {children}
   </HeadlessSelectTrigger>
 );
