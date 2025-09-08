@@ -85,7 +85,10 @@ export const SelectSearch = () => {
             <button
               type="button"
               className="shrink-0 text-gray-400"
-              onClick={() => setSearch("")}
+              onClick={(e) => {
+                e.stopPropagation();
+                setSearch("");
+              }}
             >
               <span className="sr-only">Clear</span>
               <XCircle className="size-4" />
