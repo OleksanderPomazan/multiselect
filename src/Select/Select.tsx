@@ -1,4 +1,4 @@
-import { useEffect, useState, type ComponentProps } from "react";
+import { useEffect, useId, useState, type ComponentProps } from "react";
 import {
   type MultipleSelectContext,
   type MultipleSelection,
@@ -51,6 +51,8 @@ export const Select = <Multiple extends boolean = false>(
     ...attributes
   } = props;
 
+  const baseId = useId();
+
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [triggerEl, setTriggerEl] = useState<HTMLElement | null>(null);
@@ -91,6 +93,7 @@ export const Select = <Multiple extends boolean = false>(
             setDropdownEl,
             placeholder,
             options,
+            baseId,
             ...selectionProps,
           } as Multiple extends true
             ? MultipleSelectContext

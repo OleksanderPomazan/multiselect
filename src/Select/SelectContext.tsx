@@ -1,6 +1,7 @@
 import { createContext, useContext } from "react";
 
 type BaseSelectContext = {
+  baseId: string;
   placeholder?: string;
   open: boolean;
   setOpen: (open: boolean) => void;

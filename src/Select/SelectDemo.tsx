@@ -46,6 +46,7 @@ export const SelectDemo = () => {
         <SelectListBox>
           {options.map((option) => (
             <SelectItem
+              key={option.id}
               id={option.id}
               textValue={option.text}
               className="px-2 data-[selected=true]:bg-green-200 data-[focused=true]:bg-gray-200"

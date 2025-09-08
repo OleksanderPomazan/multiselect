@@ -14,6 +14,7 @@ import { cn } from "../cn";
 import { useFocusWithin } from "ahooks";
 import { useEventCallback } from "usehooks-ts";
 import { useSelectSearchContext } from "./SelectSearch";
+import { useIdFor } from "./ids";
 
 const modN = (n: number, d: number) => {
   return ((n % d) + d) % d;
@@ -43,8 +44,6 @@ export const SelectListBox = ({ children, ...props }: SelectListBoxProps) => {
   const [focusedKey, setFocusedKey] = useState<string | null>(null);
 
   const { search } = useSelectSearchContext();
-
-  if (!open) return null;
 
   const isSelected = (id: string) => {
     if (multiple) {
@@ -123,11 +122,28 @@ export const SelectListBox = ({ children, ...props }: SelectListBoxProps) => {
     return true;
   });
 
+  const listboxId = useIdFor("listbox");
+  const labelId = useIdFor("label");
+
+  if (!open) return null;
+
   return (
     <ListBoxContext.Provider
       value={{ focusedKey, setFocusedKey, toggleItem, isSelected }}
     >
-      <div {...props}>{filteredChildren}</div>
+      <div
+        {...mergeProps(
+          {
+            id: listboxId,
+            "aria-labelledby": labelId,
+            role: "listbox",
+            "aria-activedescendant": focusedKey ?? undefined,
+          },
+          props
+        )}
+      >
+        {filteredChildren}
+      </div>
     </ListBoxContext.Provider>
   );
 };
@@ -203,6 +219,8 @@ export const SelectItem = ({
     <div
       {...mergeProps(
         {
+          role: "option",
+          "aria-selected": isSelected(props.id),
           "data-focused": isFocused,
           "data-selected": isSelected(props.id),
           onMouseOver: () => setFocusedKey(props.id),
