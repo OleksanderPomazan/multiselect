@@ -74,7 +74,20 @@ export const SelectListBox = ({ children, ...props }: SelectListBoxProps) => {
 
   const isDropdownFocused = useFocusWithin(dropdownEl);
 
-  const optionsOrder = Array.from(options.keys());
+  const filteredOptions = Array.from(options.values())
+    .filter((option) =>
+      option.textValue.toLowerCase().includes(search.toLowerCase())
+    )
+    .map((option) => option.id);
+
+  const filteredChildren = Children.toArray(children).filter((child) => {
+    if (isValidElement<SelectItemProps>(child) && child.type === SelectItem) {
+      return filteredOptions.includes(child.props.id);
+    }
+    return true;
+  });
+
+  const optionsOrder = Array.from(filteredOptions);
 
   const keyboardNavigationHandler = useEventCallback((event: KeyboardEvent) => {
     if (event.key === "ArrowDown") {
@@ -93,7 +106,7 @@ export const SelectListBox = ({ children, ...props }: SelectListBoxProps) => {
     }
 
     if (event.key === "Enter" || event.key === " ") {
-      if (focusedKey) {
+      if (focusedKey && filteredOptions.includes(focusedKey)) {
         toggleItem(focusedKey);
       }
       return;
@@ -108,19 +121,6 @@ export const SelectListBox = ({ children, ...props }: SelectListBoxProps) => {
       };
     }
   }, [isDropdownFocused, keyboardNavigationHandler]);
-
-  const filteredOptions = Array.from(options.values())
-    .filter((option) =>
-      option.textValue.toLowerCase().includes(search.toLowerCase())
-    )
-    .map((option) => option.id);
-
-  const filteredChildren = Children.toArray(children).filter((child) => {
-    if (isValidElement<SelectItemProps>(child) && child.type === SelectItem) {
-      return filteredOptions.includes(child.props.id);
-    }
-    return true;
-  });
 
   const listboxId = useIdFor("listbox");
   const labelId = useIdFor("label");
