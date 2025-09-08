@@ -8,7 +8,7 @@ export const ChipItem = ({
   onRemove: () => void;
 }) => {
   return (
-    <div className="flex items-center gap-1 text-sm border border-gray-400 rounded-xl p-1">
+    <div className="flex items-center gap-1 text-sm border bg-gray-100 border-gray-400 rounded-xl p-1">
       <span>{children}</span>
 
       {/* Using span instead of button since it's incorrect to have a button nested inside another button */}
